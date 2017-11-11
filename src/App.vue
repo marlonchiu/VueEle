@@ -23,7 +23,7 @@
 
     mounted () {
       // 使用vue-resource发送ajax请求express提供mock接口
-      this.$http.get('/api/goods').then(
+      this.$http.get('/api/seller').then(
         (response) => {
           const result = response.body
           console.log('vue-resource', result)
@@ -33,7 +33,7 @@
         })
 
       // 使用axios发送ajax请求mockjs提供mock接口
-      axios.get('/api2/goods')
+      axios.get('/api2/seller')
         .then((response) => {
           const result = response.data
           console.log('axios', result)
@@ -41,6 +41,10 @@
         .catch(error => {
           console.log("失败了")
         })
+
+      // 通过dispath()来触发action调用获取后台seller数据
+      this.$store.dispatch('getSeller')
+
     },
     components:{
       'ele-header': header
