@@ -15,7 +15,7 @@ export default {
     })
   },
   // 获取商品列表信息
-  getGoods({commit}){
+  getGoods({commit}, cb){
     // 发送ajax请求
     reqGoods().then(response => {
       const result = response.data
@@ -23,6 +23,8 @@ export default {
         const goods = result.data
         // 提交mutation请求
         commit(RECEIVE_GOODS, {goods})
+        // 如果传递了回调函数, 调用回调函数通知调用者
+        cb && cb()
       }
     })
   },
