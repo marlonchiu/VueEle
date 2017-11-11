@@ -28,47 +28,46 @@
     <div class="background">
       <img :src="seller.avatar" alt="">
     </div>
-    <div class="detail" v-show="isShow">
-      <div class="detail-wrapper">
-        <div class="detail-main">
-          <div class="name">{{seller.name}}</div>
-          <div class="stars-wrapper">
-            <span class="star48 on"></span>
-            <span class="star48 on"></span>
-            <span class="star48 on"></span>
-            <span class="star48 on"></span>
-            <span class="star48 off"></span>
-          </div>
-          <div class="title">
-            <div class="line"></div>
-            <div class="text">优惠信息</div>
-            <div class="line"></div>
-          </div>
-          <ul class="supports">
-            <li class="support" v-for="(support, index) in seller.supports" :key="index">
-              <span class="icon" :class="supportClasses[support.type]"></span>
-              <span class="text">{{support.description}}</span>
-            </li>
-          </ul>
-          <div class="title">
-            <div class="line"></div>
-            <div class="text">商家公告</div>
-            <div class="line"></div>
-          </div>
-          <div class="content">
-            <p>{{seller.bulletin}}</p>
+    <transition name="fade">
+      <div class="detail" v-show="isShow">
+        <div class="detail-wrapper">
+          <div class="detail-main">
+            <div class="name">{{seller.name}}</div>
+            <div class="stars-wrapper">
+              <star :score="seller.score" :size="48"/>
+            </div>
+            <div class="title">
+              <div class="line"></div>
+              <div class="text">优惠信息</div>
+              <div class="line"></div>
+            </div>
+            <ul class="supports">
+              <li class="support" v-for="(support, index) in seller.supports" :key="index">
+                <span class="icon" :class="supportClasses[support.type]"></span>
+                <span class="text">{{support.description}}</span>
+              </li>
+            </ul>
+            <div class="title">
+              <div class="line"></div>
+              <div class="text">商家公告</div>
+              <div class="line"></div>
+            </div>
+            <div class="content">
+              <p>{{seller.bulletin}}</p>
+            </div>
           </div>
         </div>
+        <div class="detail-close" @click="toggleShow">
+          <span class="icon-close"></span>
+        </div>
       </div>
-      <div class="detail-close" @click="toggleShow">
-        <span class="icon-close"></span>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex'
+  import star from '../star/star.vue'
   export default {
     data (){
       return {
@@ -83,6 +82,9 @@
     },
     computed: {
       ...mapState(['seller']),
+    },
+    components: {
+      star
     }
   }
 </script>
@@ -207,6 +209,10 @@
       height 100%
       background-color rgba(7, 17, 27, 0.8)
       z-index 10
+      &.fade-enter-active, &.fade-leave-active
+        transition opacity .5s
+      &.fade-enter, &.fade-leave-to
+        opacity 0
       .detail-wrapper
         min-height 100%
         padding 64px 36px 32px 36px
@@ -222,42 +228,6 @@
             height 24px
             display flex
             justify-content space-around
-            .star48
-              width 20px
-              height 20px
-              background-size 20px 20px
-              background-repeat no-repeat
-              /*margin-right 22px*/
-            .on
-              bg-star(star48_on)
-            .half
-              bg-star(star48_half)
-            .off
-              bg-star(star48_off)
-            .star24
-              width 10px
-              height 10px
-              background-size 10px 10px
-              background-repeat no-repeat
-
-            .on
-              bg-star(star24_on)
-            .half
-              bg-star(star24_half)
-            .off
-              bg-star(star24_off)
-            .star36
-              width 15px
-              height 15px
-              background-size 15px 15px
-              background-repeat no-repeat
-            .on
-              bg-star(star36_on)
-            .half
-              bg-star(star36_half)
-            .off
-              bg-star(star36_off)
-
           .title
             margin-top 28px
             margin-bottom 24px
