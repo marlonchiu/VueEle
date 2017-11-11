@@ -2,36 +2,36 @@
   <div  class="header">
     <div class="content-wrapper">
       <div class="avatar">
-        <img src="./avatar.jpg" alt="logo">
+        <img :src="seller.avatar" alt="logo">
       </div>
       <div class="content">
         <div class="title">
           <span class="brand"></span>
-          <span class="name">粥品香坊（回龙观）</span>
+          <span class="name">{{seller.name}}</span>
         </div>
-        <div class="description">蜂鸟专送/38分钟送达</div>
-        <div class="support">
-          <span class="icon invoice"></span>
-          <span class="text">在线支付满28减5</span>
+        <div class="description">{{seller.description}}/{{seller.deliveryTime}}分钟送达</div>
+        <div class="support" v-if="seller.supports">
+          <span class="icon" :class="supportClasses[seller.supports[0].type]"></span>
+          <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
-      <div class="supports_count">
-        <span class="count">5个</span>
+      <div class="supports_count" v-if="seller.supports" @click="toggleShow">
+        <span class="count">{{seller.supports.length}}个</span>
         <span class="icon-keyboard_arrow_right"></span>
       </div>
     </div>
-    <div class="bulletin-wrapper">
+    <div class="bulletin-wrapper" @click="toggleShow">
       <span class="bulletin-title"></span>
-      <span class="bulletin-text">粥品香坊其烹饪粥料的秘方源于中国千年古法，在融和现代制作工艺，由世界烹饪大师屈浩先生领衔研发。坚守纯天然、0添加的良心品质深得消费者青睐，发展至今成为粥类的引领品牌。是2008年奥运会和2013年园博会指定餐饮服务商。</span>
+      <span class="bulletin-text">{{seller.bulletin}}</span>
       <span class="icon-keyboard_arrow_right"></span>
     </div>
     <div class="background">
-      <img src="./avatar.jpg" alt="">
+      <img :src="seller.avatar" alt="">
     </div>
-    <div class="detail">
+    <div class="detail" v-show="isShow">
       <div class="detail-wrapper">
         <div class="detail-main">
-          <div class="name">粥品香坊（回龙观）</div>
+          <div class="name">{{seller.name}}</div>
           <div class="stars-wrapper">
             <span class="star48 on"></span>
             <span class="star48 on"></span>
@@ -45,25 +45,9 @@
             <div class="line"></div>
           </div>
           <ul class="supports">
-            <li class="support">
-              <span class="icon decrease"></span>
-              <span class="text">在线支付满28减5</span>
-            </li>
-            <li class="support">
-              <span class="icon discount"></span>
-              <span class="text">VC无限橙果汁全场8折</span>
-            </li>
-            <li class="support">
-              <span class="icon guarantee"></span>
-              <span class="text">单人精彩套餐</span>
-            </li>
-            <li class="support">
-              <span class="icon invoice"></span>
-              <span class="text">该商家支持发票,请下单写好发票抬头</span>
-            </li>
-            <li class="support">
-              <span class="icon special"></span>
-              <span class="text">已加入“外卖保”计划,食品安全保障</span>
+            <li class="support" v-for="(support, index) in seller.supports" :key="index">
+              <span class="icon" :class="supportClasses[support.type]"></span>
+              <span class="text">{{support.description}}</span>
             </li>
           </ul>
           <div class="title">
@@ -72,11 +56,11 @@
             <div class="line"></div>
           </div>
           <div class="content">
-            <p>粥品香坊其烹饪粥料的秘方源于中国千年古法，在融和现代制作工艺，由世界烹饪大师屈浩先生领衔研发。坚守纯天然、0添加的良心品质深得消费者青睐，发展至今成为粥类的引领品牌。是2008年奥运会和2013年园博会指定餐饮服务商。</p>
+            <p>{{seller.bulletin}}</p>
           </div>
         </div>
       </div>
-      <div class="detail-close">
+      <div class="detail-close" @click="toggleShow">
         <span class="icon-close"></span>
       </div>
     </div>
@@ -87,10 +71,18 @@
   import {mapState} from 'vuex'
   export default {
     data (){
-      return {}
+      return {
+        supportClasses: ['decrease', 'discount', 'guarantee', 'invoice', 'special'],
+        isShow: false
+      }
     },
-    computed:{
-      ...mapState(['seller'])
+    methods: {
+      toggleShow () {
+        this.isShow = !this.isShow
+      }
+    },
+    computed: {
+      ...mapState(['seller']),
     }
   }
 </script>
@@ -208,7 +200,6 @@
         height  100%
         filter blur(10px)
     .detail
-      display none
       position fixed
       top 0
       left 0
