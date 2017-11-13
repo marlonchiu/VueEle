@@ -1,4 +1,11 @@
-import {RECEIVE_SELLER, RECEIVE_GOODS, RECEIVE_RATINGS} from './types'
+import Vue from 'vue'
+import {
+  RECEIVE_SELLER,
+  RECEIVE_GOODS,
+  RECEIVE_RATINGS,
+  INCREMENT_FOOD_COUNT,
+  DECREMENT_FOOD_COUNT
+} from './types'
 
 export default {
   [RECEIVE_SELLER](state, {seller}){
@@ -11,5 +18,19 @@ export default {
 
   [RECEIVE_RATINGS](state, {ratings}){
     state.ratings = ratings
+  },
+
+  [INCREMENT_FOOD_COUNT](state, {food}){
+    if(food.count){  // 判断是否有值，有值则加1
+      food.count++
+    }else {
+      Vue.set(food, 'count', 1) // 新加的属性就有了数据绑定, 界面就会更新
+    }
+  },
+
+  [DECREMENT_FOOD_COUNT] (state, {food}){
+    if(food.count) {
+      food.count--
+    }
   }
 }

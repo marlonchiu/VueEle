@@ -1,5 +1,11 @@
 import {reqSeller, reqGoods, reqRatings, RESULT_OK} from '../api'
-import {RECEIVE_SELLER, RECEIVE_GOODS, RECEIVE_RATINGS} from './types'
+import {
+  RECEIVE_SELLER,
+  RECEIVE_GOODS,
+  RECEIVE_RATINGS,
+  INCREMENT_FOOD_COUNT,
+  DECREMENT_FOOD_COUNT
+} from './types'
 /*定义获取数据的方法*/
 export default {
   // 获取商家信息
@@ -39,6 +45,15 @@ export default {
         commit(RECEIVE_RATINGS, {ratings})
       }
     })
+  },
+
+  // 更新food数量
+  updateFoodCount({commit}, {food, isAdd}){
+    if(isAdd){
+      commit(INCREMENT_FOOD_COUNT, {food})
+    }else{
+      commit(DECREMENT_FOOD_COUNT, {food})
+    }
   }
 
 }

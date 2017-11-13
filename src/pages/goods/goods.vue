@@ -3,8 +3,8 @@
     <div class="goods">
       <div class="menu-wrapper" ref="menuWrapper">
         <ul>
-          <!--少个current样式-->
-          <li class="menu-item" v-for="(good, index) in goods" :key="index">
+          <li class="menu-item" v-for="(good, index) in goods" :key="index"
+              :class="{current: index === currentIndex}"  @click="clickMenuItem(index)">
             <span class="text border-1px">
               <span class="icon" v-if="good.type>=0" :class="supportClasses[good.type]"></span>{{good.name}}
           </span>
@@ -32,7 +32,8 @@
                     <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    cart++
+                    <!--<cartcontrol :food="food" :updateFoodCount="updateFoodCount"/>-->
+                    <cartcontrol :food="food"/>
                   </div>
                 </div>
               </li>
@@ -46,31 +47,132 @@
 
 <script>
   import {mapState} from 'vuex'
+  import cartcontrol from '../../components/cartcontrol/cartcontrol.vue'
   import BScroll from 'better-scroll'
   export default {
     data (){
       return {
-        supportClasses: ['decrease', 'discount', 'guarantee', 'invoice', 'special']
+        supportClasses: ['decrease', 'discount', 'guarantee', 'invoice', 'special'],
+        scrollY: 0,
+        tops: []
       }
     },
     mounted(){
       // 获取数据
       this.$store.dispatch('getGoods', ()=>{   // 当此函数执行，goods数据状态就更新了
         this.$nextTick(()=>{
-          this.initScroll()
+          this._initScroll()
+          this._initTops()
         })
-      } )
+      })
     },
     methods: {
-      initScroll(){
+      _initScroll(){
         // 定义分类列表的scroll对象
-        const menuScroll = new BScroll(this.$refs.menuWrapper)
+        const menuScroll = new BScroll(this.$refs.menuWrapper, {
+          click: true  // 分发点击事件
+        })
         // 定义食物列表的scroll对象
-        const foodsScroll = new BScroll(this.$refs.foodsWrapper)
-      }
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          probeType: 2, // 实时派发scroll事件(必须是用户操作)
+          click: true  // 分发点击事件  (点击购物车按钮时的操作需要)
+        })
+
+        // 每次滑动得到划过的高度值（BScroll对象有自定义的方法）
+        // 给foodsScroll绑定scroll监听
+        this.foodsScroll.on('scroll', (event) => {
+          console.log(event.y)
+          // 更新scrollY的值
+          this.scrollY = Math.abs(event.y)
+        })
+
+        // scrollEnd  给foodsScroll绑定scrollEnd监听
+        this.foodsScroll.on('scrollEnd', (event) => {
+          // 更新scrollY的值
+          this.scrollY = Math.abs(event.y)
+        })
+      },
+
+      /*
+        功能点一：滑动右侧food列表，左侧的分类对应的分类下
+        功能点二：点击左侧列表的分类，右侧跳转到对应的food列表
+
+        功能点一
+        要实现如上功能，经过分析需要知道当前food对应的分类索引值，currentIndex
+          可以通过计算属性得到currentIndex，
+          而currentIndex的影响因素：当前滚动过去的高度和每一个分类对应的高度
+      * */
+
+      // 获取每一个分类的高度（即在什么范围内是对应的就是什么样的index值）
+      _initTops(){
+        const tops = []
+        let top = 0
+        tops.push(top)   // 初始默认高度为0
+        // 获取到所有foods分类列表的高度值
+        const lis = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        Array.prototype.slice.call(lis).forEach(li => {
+          top += li.clientHeight
+          tops.push(top)
+        })
+        // 更新tops的值
+        this.tops = tops
+        console.log(this.tops)
+      },
+
+      // 左侧点击，右侧滚动到对应的food详情
+      clickMenuItem (index){
+        // 右侧应该滚动过的距离
+        const length = this.tops[index]
+        // 右侧平滑滚动到指定的位置
+        /*
+         Bscroll对象提供的
+          scrollTo(x, y, time, easing)
+             {Number} x 横轴坐标（单位 px）
+             {Number} y 纵轴坐标（单位 px）
+             {Number} time 滚动动画执行的时长（单位 ms）
+             {Object} easing 缓动函数，一般不建议修改
+        */
+        this.foodsScroll.scrollTo(0, -length, 300, "easing")
+        // 指定最终的scrollY
+        this.scrollY = this.tops[index]
+      },
+
+      // 定义一个更新food数量的方法  （采用vuex的方法）
+      /*updateFoodCount (food, isAdd){
+        console.log('updateFoodCount()', isAdd)
+        if(isAdd){   // 加1
+          if(food.count){  // 判断是否有值，有值则加1
+            food.count++
+          }else{
+            //food.count = 1 // 给food添加count属性, 值为1  这种方法是错误的，不能数据绑定的 界面不会更新
+            this.$set(food, 'count', 1)  // 新加的属性就有了数据绑定, 界面就会更新
+          }
+
+        }else{  // 减1
+          if(food.count){
+            food.count--
+          }
+        }
+      }*/
     },
     computed: {
-      ... mapState(['goods'])
+      ... mapState(['goods']),
+
+      // 更新左侧对应的index
+      currentIndex () {
+        const {tops, scrollY} = this
+        // 用scrollY与当前的top和下一个top比较
+        const Index = tops.findIndex((top, index) => {
+          return scrollY >= top && scrollY < tops[index + 1]
+        })
+        //console.log(Index);
+        return Index
+      }
+
+
+    },
+    components: {
+      cartcontrol
     }
   }
 </script>
