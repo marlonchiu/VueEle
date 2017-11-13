@@ -1,47 +1,130 @@
 <template>
   <div>
     <div class="shopcart">
-      <div class="content">
-        <div class="content-left">
+      <div class="content" >
+        <div class="content-left" @click="toggleShow">
           <div class="logo-wrapper">
-            <div class="logo">
-              <i class="icon-shopping_cart"></i>
+            <div class="logo" :class="{highlight: totalCount>0}">
+              <i class="icon-shopping_cart" :class="{highlight: totalCount>0}"></i>
             </div>
+            <div class="num" v-if="totalCount">{{totalCount}}</div>
           </div>
-          <div class="price">￥0</div>
-          <div class="desc">另需配送费￥4元</div>
+          <div class="price">￥{{totalPrice}}</div>
+          <div class="desc">另需配送费￥{{seller.deliveryPrice}}元</div>
         </div>
-        <div class="content-right">
-          <div class="pay not-enough">
-            ￥20元起送
+        <div class="content-right" @click="payCart">
+          <div class="pay" :class="payClass">
+            {{payText}}
           </div>
         </div>
       </div>
       <div class="ball-container"></div>
-      <div class="shopcart-list" v-show="isShow">
-        <div class="list-header">
-          <h1 class="title">购物车</h1>
-          <button class="mint-button mint-button--primary mint-button--normal" style="float: right;"><!----> <label class="mint-button-text">清空</label></button>
+      <transition name="fold">
+        <div class="shopcart-list" v-show="listShow">
+          <div class="list-header">
+            <h1 class="title">购物车</h1>
+<!--            <button class="mint-button mint-button&#45;&#45;primary mint-button&#45;&#45;normal" style="float: right;">
+              <label class="mint-button-text">清空</label>
+            </button>-->
+            <span class="empty" @click="clearCart">清空</span>
+          </div>
+          <div class="list-content" ref="listConent">
+            <ul>
+              <li class="food" v-for="(food, index) in foodList" :key="index">
+                <span class="name">{{food.name}}</span>
+                <div class="price"><span>￥{{food.price}}</span></div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="list-content">
-          <ul>
-            <li></li>
-          </ul>
-        </div>
-      </div>
+      </transition>
     </div>
-    <div class="list-mask" v-show="isShow"></div>
+    <transition name="fade">
+      <div class="list-mask" v-show="listShow" @click="toggleShow"></div>
+    </transition>
   </div>
 </template>
 
 <script>
+  import {mapState, mapGetters} from 'vuex'
+  import BScroll from 'better-scroll'
+  import cartcontrol from '../cartcontrol/cartcontrol.vue'
   export default {
     data (){
       return {
         isShow: false
       }
     },
-    components: {}
+    methods: {
+      toggleShow(){
+        this.isShow = !this.isShow
+      },
+      clearCart(){
+        if(confirm('确定清空购物车吗?')) {
+          // 触发事件
+          this.$store.dispatch('clearCart', )
+//          this.$emit('clear', this.foodList)
+        }
+      },
+      payCart(){
+        const {totalPrice} = this
+        const {minPrice, deliveryPrice} = this.seller
+        if(totalPrice - minPrice >= 0) {
+          alert(`支付${totalPrice+deliveryPrice}`)
+        }
+      }
+    },
+    computed: {
+      ...mapState(['seller']),
+      ...mapGetters(['foodList', 'totalCount', 'totalPrice']),
+
+      payClass(){
+        const {totalPrice} = this
+        const {minPrice} = this.seller
+        return totalPrice >= minPrice ? 'enough' : 'not-enough'
+      },
+      payText(){
+        const {totalPrice} = this
+        const {minPrice} = this.seller
+        if(totalPrice === 0){
+          return `￥${minPrice}元起送`
+        }else if (totalPrice < minPrice){
+          return `还差￥${minPrice-totalPrice}元起送`
+        }else{
+          return '去结算'
+        }
+      },
+
+      // 购物车是否显示
+      listShow(){
+        const {totalCount, isShow} = this
+        if(totalCount === 0){
+          this.isShow = false
+          return false
+        }
+        if(isShow){  // 购物车列表要能够上下滑动
+          this.$nextTick(() => {
+            // 创建scroll单例对象
+            if(!this.scroll){
+              this.scroll = new BScroll(this.$refs.listConent,{
+                click: true,
+                probeType: 2
+              })
+            }else{
+              this.scroll.refresh()   // 通知scroll对象更新, 形成滑动
+            }
+          })
+        }
+
+        return isShow
+      }
+    },
+    components: {
+      cartcontrol
+    }
   }
 </script>
 

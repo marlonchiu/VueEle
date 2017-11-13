@@ -41,6 +41,7 @@
           </li>
         </ul>
       </div>
+      <shopcart></shopcart>
     </div>
   </div>
 </template>
@@ -48,6 +49,7 @@
 <script>
   import {mapState} from 'vuex'
   import cartcontrol from '../../components/cartcontrol/cartcontrol.vue'
+  import shopcart from '../../components/shopcart/shopcart.vue'
   import BScroll from 'better-scroll'
   export default {
     data (){
@@ -172,7 +174,8 @@
 
     },
     components: {
-      cartcontrol
+      cartcontrol,
+      shopcart
     }
   }
 </script>
