@@ -35,8 +35,8 @@ export default {
       }
     })
   },
-  // 获取商家信息
-  getRatings({commit}){
+  // 获取评价信息
+  getRatings({commit}, cb){
     // 发送ajax请求
     reqRatings().then(response => {
       const result = response.data
@@ -44,6 +44,8 @@ export default {
         const ratings = result.data
         // 提交mutation请求
         commit(RECEIVE_RATINGS, {ratings})
+        // 如果传递了回调函数, 调用回调函数通知调用者
+        cb && cb()
       }
     })
   },
