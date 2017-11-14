@@ -5,6 +5,7 @@ import router from './router'
 import store from './store'
 import './common/stylus/fonts.styl'
 import './mock/mockServer'
+import './filters'
 
 Vue.use(VueResource)
 /* eslint-disable no-new */

@@ -4,11 +4,11 @@
 <!--      <div class="cart-decrease icon-remove_circle_outline"
            v-show="food.count" @click="updateFoodCount(food, false)"></div>-->
       <div class="cart-decrease icon-remove_circle_outline"
-           v-show="food.count" @click="updateFoodCount(false)"></div>
+           v-show="food.count" @click.stop="updateFoodCount(false)"></div>
     </transition>
     <div class="cart-count" v-show="food.count">{{food.count}}</div>
    <!-- <div class="cart-add icon-add_circle" @click="updateFoodCount(food, true)"></div>-->
-    <div class="cart-add icon-add_circle" @click="updateFoodCount(true)"></div>
+    <div class="cart-add icon-add_circle" @click.stop="updateFoodCount(true)"></div>
   </div>
 </template>
 
