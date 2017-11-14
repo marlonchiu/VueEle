@@ -4,7 +4,8 @@ import {
   RECEIVE_GOODS,
   RECEIVE_RATINGS,
   INCREMENT_FOOD_COUNT,
-  DECREMENT_FOOD_COUNT
+  DECREMENT_FOOD_COUNT,
+  CLEAR_CART
 } from './types'
 /*定义获取数据的方法*/
 export default {
@@ -54,6 +55,11 @@ export default {
     }else{
       commit(DECREMENT_FOOD_COUNT, {food})
     }
+  },
+
+  // 清空购物车
+  clearCart ({commit}, foodList) {
+    commit(CLEAR_CART, {foodList})
   }
 
 }

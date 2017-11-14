@@ -65,8 +65,7 @@
       clearCart(){
         if(confirm('确定清空购物车吗?')) {
           // 触发事件
-          this.$store.dispatch('clearCart', )
-//          this.$emit('clear', this.foodList)
+          this.$store.dispatch('clearCart', this.foodList)
         }
       },
       payCart(){

@@ -25,10 +25,10 @@ export default {
     return getters.foodList.reduce((preTotal, food) => preTotal + food.count * food.price, 0)
   },
 
-  // 清空购物车 即将food的数量变为0
-  clearCart(state, getters){
-    getters.foodList.forEach((food, index) => {
+  // 清空购物车 即将food的数量变为0  (错误的)
+/*  clearCart(state, getters){
+    getters.foodList.forEach((food) => {
       food.count = 0
     })
-  }
+  }*/
 }
