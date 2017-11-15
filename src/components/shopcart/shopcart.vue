@@ -23,10 +23,8 @@
         <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
             <h1 class="title">购物车</h1>
-<!--            <button class="mint-button mint-button&#45;&#45;primary mint-button&#45;&#45;normal" style="float: right;">
-              <label class="mint-button-text">清空</label>
-            </button>-->
-            <span class="empty" @click="clearCart">清空</span>
+            <!--<span class="empty" @click="clearCart">清空</span>-->
+            <mt-button style="float: right" type="primary" @click.native="clearCart">清空</mt-button>
           </div>
           <div class="list-content" ref="listConent">
             <ul>
@@ -50,6 +48,7 @@
 
 <script>
   import {mapState, mapGetters} from 'vuex'
+  import {MessageBox, Toast} from 'mint-ui'
   import BScroll from 'better-scroll'
   import cartcontrol from '../cartcontrol/cartcontrol.vue'
   export default {
@@ -63,10 +62,18 @@
         this.isShow = !this.isShow
       },
       clearCart(){
-        if(confirm('确定清空购物车吗?')) {
+        /*if(confirm('确定清空购物车吗?')) {
           // 触发事件
           this.$store.dispatch('clearCart', this.foodList)
-        }
+        }*/
+        MessageBox.confirm('确定清空购物车吗?').then(action => {
+          this.$store.dispatch('clearCart', this.foodList)
+          Toast({
+            message: '购物车已清空',
+            position: 'bottom',
+            duration: 1000
+          })
+        })
       },
       payCart(){
         const {totalPrice} = this

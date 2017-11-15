@@ -1,9 +1,13 @@
 /*路由器模块*/
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import goods from '../pages/goods/goods.vue'
+/*import goods from '../pages/goods/goods.vue'
 import ratings from '../pages/ratings/ratings.vue'
-import seller from '../pages/seller/seller.vue'
+import seller from '../pages/seller/seller.vue'*/
+// 路由懒加载
+const goods = () => import('../pages/goods/goods.vue')
+const ratings = () => import('../pages/ratings/ratings.vue')
+const seller = () => import('../pages/seller/seller.vue')
 
 Vue.use(VueRouter)
 
