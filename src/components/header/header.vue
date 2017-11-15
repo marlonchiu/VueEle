@@ -208,7 +208,7 @@
       width 100%
       height 100%
       background-color rgba(7, 17, 27, 0.8)
-      z-index 10
+      z-index 80
       &.fade-enter-active, &.fade-leave-active
         transition opacity .5s
       &.fade-enter, &.fade-leave-to

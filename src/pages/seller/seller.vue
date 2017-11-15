@@ -9,17 +9,20 @@
           <span class="text">月售单</span>
         </div>
         <ul class="remark">
-          <li class="block"><h2>起送价</h2>
+          <li class="block">
+            <h2>起送价</h2>
             <div class="content">
               <span class="stress">{{seller.minPrice}}</span>元
             </div>
           </li>
-          <li class="block"><h2>商家配送</h2>
+          <li class="block">
+            <h2>商家配送</h2>
             <div class="content">
               <span class="stress">{{seller.deliveryPrice}}</span>元
             </div>
           </li>
-          <li class="block"><h2>平均配送时间</h2>
+          <li class="block">
+            <h2>平均配送时间</h2>
             <div class="content">
               <span class="stress">{{seller.deliveryTime}}</span>分钟
             </div>
@@ -30,9 +33,7 @@
           <span class="text">收藏</span>
         </div>
       </div>
-
       <split></split>
-
       <div class="bulletin">
         <h1 class="title">公告与活动</h1>
         <div class="content-wrapper border-1px">
@@ -45,9 +46,7 @@
           </li>
         </ul>
       </div>
-
       <split></split>
-
       <div class="pics">
         <h1 class="title">商家实景</h1>
         <div class="pic-wrapper" ref="picWrapper">
@@ -58,9 +57,7 @@
           </ul>
         </div>
       </div>
-
       <split></split>
-
       <div class="info">
         <h1 class="title border-1px">商家信息</h1>
         <ul>
