@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import VueLazyload from 'vue-lazyload'
+import VueScroller from 'vue-scroller'    // 使用下vue-scroller 库来实现一下滑动
 import {Button} from 'mint-ui';
 import App from './App.vue'
 import router from './router'
@@ -15,6 +16,7 @@ Vue.use(VueLazyload, {    // 内部会自定义一个全局指令 lazy来实现�
   loading: loading
 })
 Vue.component(Button.name, Button); // 将组件映射成全局标签
+Vue.use(VueScroller)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
