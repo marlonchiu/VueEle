@@ -18,7 +18,17 @@
           </div>
         </div>
       </div>
-      <div class="ball-container"></div>
+      <div class="ball-container">
+        <transition v-for="(ball, index) in balls" :key="index"
+                    @before-enter="beforeDrop"
+                    @enter="drop"
+                    @after-enter="afterDrop"
+                    :css="false">
+          <div class="ball" v-show="ball.isShow">
+            <div class="inner inner-hook"></div>
+          </div>
+        </transition>
+      </div>
       <transition name="fold">
         <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
@@ -47,6 +57,7 @@
 </template>
 
 <script>
+  import PubSub from 'pubsub-js'
   import {mapState, mapGetters} from 'vuex'
   import {MessageBox, Toast} from 'mint-ui'
   import BScroll from 'better-scroll'
@@ -54,10 +65,94 @@
   export default {
     data (){
       return {
-        isShow: false
+        isShow: false,
+        balls: [
+          {isShow: false},
+          {isShow: false},
+          {isShow: false},
+          {isShow: false},
+          {isShow: false},
+          {isShow: false}
+        ],
+        droppingBalls: []  // 保存isShow为true的ball，多个待执行动画的ball
       }
     },
+    mounted () {
+      // 订阅消息 startBallDrop
+      PubSub.subscribe('startBallDrop',(msg, startEl) => {
+        // 找到一个隐藏的小球（对应的ball对象）
+        const ball = this.balls.find(ball => {
+          // 返回找到第一个不是隐藏的小球
+          return !ball.isShow
+        })
+
+        // 显示小球（将小球显示、保存到droppingBalls备用、）
+        if(ball){
+          ball.isShow = true
+          // 保存对应的startEl
+          ball.startEl = startEl  // 保存对应的起始位置的元素
+          // 将这个ball保存到droppingBalls
+          this.droppingBalls.push(ball)
+        }else {
+          console.log('没有ball了')
+        }
+      })
+    },
     methods: {
+      // 在开始进入之前调用, 确定动画起始时的样式状态
+      beforeDrop(el){
+        console.log('beforeDrop()')
+        // 从数组中删除第一个并返回它
+        const ball = this.droppingBalls.shift() // 从数组中删除第一个并返回它
+        const startEl = ball.startEl  // 找到点击的startEl
+
+        // 计算偏移量（从购物车中心位置到准备抛射位置）
+        let offsetY = 0
+        let offsetX = 0
+        // 得到原始位置的的坐标
+        const elLeft = 32
+        const elBottom = 22
+        // 获得小球开始抛射位置的坐标
+        const {left, top} = startEl.getBoundingClientRect()
+
+        // 算出偏移量
+        offsetX = left - elLeft
+        offsetY = -( window.innerHeight - top - elBottom)
+
+        // 指定样式
+        el.style.transform = `translate3d(0, ${offsetY}px, 0)`
+        el.children[0].style.transform = `translate3d(${offsetX}px, 0, 0)`
+
+        // 保存ball
+        el.ball = ball
+
+      },
+      // 在开始进入进调用, 确定动画结束时的样式状态
+      drop(el){
+
+        // 强制页面重绘(否则动画瞬间完成, 没有效果)
+        const temp = el.clientHeight
+        // 必须异步执行
+        this.$nextTick(() => {
+          // 指定结束点样式（回到初始位置购物车中心点）
+          el.style.transform = `translate3d(0, 0, 0)`
+          el.children[0].style.transform = `translate3d(0, 0, 0)`
+        })
+      },
+      // 在动画结束之后调用, 做一些收尾工作(隐藏小球)
+      afterDrop(el){
+
+        // 找到对应的ball
+        const ball = el.ball
+        // 样式中指定的隐藏过渡时间没用了, 手动指定延迟隐藏
+        // ball.isShow = false  // 立即隐藏
+        // 使用 JavaScript 过渡的元素添加 v-bind:css="false"，Vue 会跳过 CSS 的检测
+        setTimeout(() => {  // 延迟到动画结束时才去隐藏ball
+          ball.isShow = false
+        }, 400)
+
+      },
+
       toggleShow(){
         this.isShow = !this.isShow
       },
